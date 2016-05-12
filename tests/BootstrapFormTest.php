@@ -112,6 +112,134 @@ class BootstrapFormTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function it_opens_store_model_form_with_route_array()
+    {
+        $model = Mockery::mock('Illuminate\Database\Eloquent\Model');
+        $model->exists = false;
+
+        $this->formBuidlerMock->shouldReceive('model')
+            ->once()
+            ->with($model, [
+                'role' => 'form',
+                'route' => ['bar', 'param'],
+                'method' => 'POST',
+                'class' => 'form-horizontal',
+            ])
+            ->andReturn('foo');
+
+        $this->configMock->shouldReceive('get')
+            ->with('bootstrap_form.type')
+            ->once()
+            ->andReturn('form-horizontal');
+
+        $result = $this->bootstrapForm->open([
+            'model' => $model,
+            'store' => ['bar', 'param'],
+            'update' => 'baz'
+        ]);
+
+        $this->assertEquals('foo', $result);
+    }
+
+    /** @test */
+    public function it_opens_store_model_form_with_action_array()
+    {
+        $model = Mockery::mock('Illuminate\Database\Eloquent\Model');
+        $model->exists = false;
+
+        $this->formBuidlerMock->shouldReceive('model')
+            ->once()
+            ->with($model, [
+                'role' => 'form',
+                'action' => ['Controller@action', 'param'],
+                'method' => 'POST',
+                'class' => 'form-horizontal',
+            ])
+            ->andReturn('foo');
+
+        $this->configMock->shouldReceive('get')
+            ->with('bootstrap_form.type')
+            ->once()
+            ->andReturn('form-horizontal');
+
+        $result = $this->bootstrapForm->open([
+            'model' => $model,
+            'store' => ['Controller@action', 'param'],
+            'update' => 'baz'
+        ]);
+
+        $this->assertEquals('foo', $result);
+    }
+
+    /** @test */
+    public function it_opens_update_model_form_with_route_array()
+    {
+        $model = Mockery::mock('Illuminate\Database\Eloquent\Model');
+        $model->exists = true;
+
+        $model->shouldReceive('getRouteKey')
+            ->once()
+            ->andReturn(1);
+
+        $this->formBuidlerMock->shouldReceive('model')
+            ->once()
+            ->with($model, [
+                'role' => 'form',
+                'route' => ['baz', 'param', 1],
+                'method' => 'PUT',
+                'class' => 'form-horizontal',
+            ])
+            ->andReturn('foo');
+
+        $this->configMock->shouldReceive('get')
+            ->with('bootstrap_form.type')
+            ->once()
+            ->andReturn('form-horizontal');
+
+        $result = $this->bootstrapForm->open([
+            'model' => $model,
+            'store' => 'bar',
+            'update' => ['baz', 'param']
+        ]);
+
+        $this->assertEquals('foo', $result);
+    }
+
+    /** @test */
+    public function it_opens_update_model_form_with_action_array()
+    {
+        $model = Mockery::mock('Illuminate\Database\Eloquent\Model');
+        $model->exists = true;
+
+        $model->shouldReceive('getRouteKey')
+            ->once()
+            ->andReturn(1);
+
+        $this->formBuidlerMock->shouldReceive('model')
+            ->once()
+            ->with($model, [
+                'role' => 'form',
+                'action' => ['Controller@action', 'param', 1],
+                'method' => 'PUT',
+                'class' => 'form-horizontal',
+            ])
+            ->andReturn('foo');
+
+        $this->configMock->shouldReceive('get')
+            ->with('bootstrap_form.type')
+            ->once()
+            ->andReturn('form-horizontal');
+
+        $result = $this->bootstrapForm->open([
+            'model' => $model,
+            'store' => 'bar',
+            'update' => ['Controller@action', 'param']
+        ]);
+
+        $this->assertEquals('foo', $result);
+    }
+
+    /** @test */
     public function it_opens_a_vertical_form()
     {
         $this->formBuidlerMock->shouldReceive('open')
